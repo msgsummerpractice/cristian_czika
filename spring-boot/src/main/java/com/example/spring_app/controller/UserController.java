@@ -41,10 +41,12 @@ public class UserController {
 
         HttpHeaders headers = new HttpHeaders();
 
-        headers.add(
-                "X-Total-Count", String.valueOf(userService.getUsersByRole(role).size()));
+        List<User> users = userService.getUsersByRole(role);
 
-        return ResponseEntity.ok().headers(headers).body(userService.getUsersByRole(role));
+        headers.add(
+                "X-Total-Count", String.valueOf(users.size()));
+
+        return ResponseEntity.ok().headers(headers).body(users);
     }
 
 }

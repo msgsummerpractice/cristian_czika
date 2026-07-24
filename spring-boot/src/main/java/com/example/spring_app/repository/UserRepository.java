@@ -29,7 +29,6 @@ public class UserRepository {
     }
 
     public List<User> findByRole(String role) {
-        // toUpperCase pentru ca nu exista Objects.equalsIgnoreCase
         return users.stream().filter(u -> Objects.equals(u.getRole().toUpperCase(), role.toUpperCase())).toList();
     }
 
