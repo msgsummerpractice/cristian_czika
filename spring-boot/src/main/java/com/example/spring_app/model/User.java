@@ -8,17 +8,19 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String role;
 
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, String username, String email, String password) {
+    public User(Long id, String firstName, String lastName, String username, String email, String password, String role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -69,8 +71,16 @@ public class User {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
-        return "User(id: " + id + ", firstName: " + firstName + ", lastName: " + lastName + ", username: " + username + ", email: " + email + ")";
+        return "User(id: " + id + ", firstName: " + firstName + ", lastName: " + lastName + ", username: " + username + ", email: " + email + ", role: " + role + ")";
     }
 }
