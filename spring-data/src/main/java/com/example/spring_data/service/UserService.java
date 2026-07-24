@@ -83,4 +83,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public int getUserCount() {
+        return userRepository.countUsers();
+    }
+
+    public List<User> searchTop10UsersByUsernameIgnoreCaseOrderByUsernameAsc(String username) {
+        return userRepository.findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(username);
+    }
+
 }
