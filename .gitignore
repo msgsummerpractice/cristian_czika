@@ -1,0 +1,58 @@
+# http://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#Ignoring-Files
+# http://git-scm.com/docs/gitignore
+
+# derived objects
+bin/
+target/
+classes/
+test-classes/
+generated/
+application.xml
+
+# archives
+*.zip
+*.jar
+*.war
+*.ear
+
+# Eclipse
+.settings/
+.project
+.checkstyle
+.classpath
+.factorypath
+.faces-config.xml.jsfdia
+
+# temporary files
+tmp/
+temp/
+*.bak
+*.tmp
+*.temp
+*.old
+*.orig
+*.contrib
+
+# temporary BeyondCompare files
+# relies on four or five digits
+*.BACKUP.[0-9][0-9][0-9][0-9].*
+*.BASE.[0-9][0-9][0-9][0-9].*
+*.LOCAL.[0-9][0-9][0-9][0-9].*
+*.REMOTE.[0-9][0-9][0-9][0-9].*
+
+*.BACKUP.[0-9][0-9][0-9][0-9][0-9].*
+*.BASE.[0-9][0-9][0-9][0-9][0-9].*
+*.LOCAL.[0-9][0-9][0-9][0-9][0-9].*
+*.REMOTE.[0-9][0-9][0-9][0-9][0-9].*
+
+# IntelliJ
+.idea/
+*.iml
+/.git-credentials
+
+# VSCode 
+.vscode/
+
+# Maven CI Friendly Version
+.flattened-pom.xml
+ 
