@@ -24,4 +24,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getUsersByRole(String role) {
+        if (role == null || role.isEmpty()) {
+            return userRepository.findAll();
+        }
+
+        return userRepository.findByRole(role);
+    }
 }

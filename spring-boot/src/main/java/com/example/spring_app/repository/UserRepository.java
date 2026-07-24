@@ -2,6 +2,7 @@ package com.example.spring_app.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,15 @@ public class UserRepository {
     }
 
     public User save(User user) {
-        users.stream().filter(u -> u.getId().equals(user.getId())).findFirst().ifPresent(users::remove);
+        users.removeIf(u -> Objects.equals(u.getId(), user.getId()));
 
         users.add(user);
         return user;
+    }
+
+    public List<User> findByRole(String role) {
+        // toUpperCase pentru ca nu exista Objects.equalsIgnoreCase
+        return users.stream().filter(u -> Objects.equals(u.getRole().toUpperCase(), role.toUpperCase())).toList();
     }
 
 }

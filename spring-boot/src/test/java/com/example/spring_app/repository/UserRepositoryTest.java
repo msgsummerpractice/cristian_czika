@@ -3,7 +3,6 @@ package com.example.spring_app.repository;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,6 @@ public class UserRepositoryTest {
 
         List<User> result = userRepository.findAll();
 
-        assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals("cristi", result.get(0).getUsername());
         assertEquals("andrei", result.get(1).getUsername());
@@ -51,9 +49,15 @@ public class UserRepositoryTest {
 
         List<User> result = userRepository.findAll();
 
-        assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("cristi1234", result.get(0).getPassword());
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenNoUsersExist() {
+        List<User> result = userRepository.findAll();
+
+        assertEquals(0, result.size());
     }
 
 }

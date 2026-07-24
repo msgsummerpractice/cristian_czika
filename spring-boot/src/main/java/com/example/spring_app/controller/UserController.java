@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(
+    public ResponseEntity<List<User>> getUsersByRole(
             @RequestParam(required = false) @Size(min = 3, max = 15, message = "Role must be between 3 and 15 characters") String role
     ) {
         logger.info("Fetching All Users");
@@ -43,9 +42,9 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add(
-                "X-Total-Count", "3");
+                "X-Total-Count", String.valueOf(userService.getUsersByRole(role).size()));
 
-        return new ResponseEntity<>(userService.getAllUsers(), headers, HttpStatus.OK);
+        return ResponseEntity.ok().headers(headers).body(userService.getUsersByRole(role));
     }
 
 }

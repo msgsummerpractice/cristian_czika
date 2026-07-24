@@ -44,7 +44,7 @@ public class UserControllerTest {
                 new User(2l, "Maria", "Ioana", "maria", "mariaioana@gmail.com", "maria123", "USER")
         );
 
-        Mockito.when(userService.getAllUsers()).thenReturn(mockUsers);
+        Mockito.when(userService.getUsersByRole(Mockito.any())).thenReturn(mockUsers);
 
         mockMvc.perform(get("/api/v1/users"))
                 .andDo(print())
@@ -74,7 +74,7 @@ public class UserControllerTest {
                 new User(2l, "Maria", "Ioana", "maria", "mariaioana@gmail.com", "maria123", "USER")
         );
 
-        Mockito.when(userService.getAllUsers()).thenReturn(mockUsers);
+        Mockito.when(userService.getUsersByRole(Mockito.any())).thenReturn(mockUsers);
 
         mockMvc.perform(get("/api/v1/users")
                 .param("role", "ADMIN"))

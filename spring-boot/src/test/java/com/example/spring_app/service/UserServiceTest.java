@@ -3,7 +3,6 @@ package com.example.spring_app.service;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,7 +34,6 @@ public class UserServiceTest {
 
         List<User> result = userService.getAllUsers();
 
-        assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals("cristi", result.get(0).getUsername());
         assertEquals("andrei", result.get(1).getUsername());
