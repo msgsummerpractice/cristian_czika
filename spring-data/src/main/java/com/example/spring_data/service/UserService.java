@@ -77,7 +77,13 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        User updatedUser = userRepository.save(userMapper.mapUserRequestToUser(request));
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+
+        User updatedUser = userRepository.save(user);
         return userMapper.mapUserToUserResponse(updatedUser);
     }
 
