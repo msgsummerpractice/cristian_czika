@@ -16,6 +16,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.example.spring_data.dto.UserMapper;
 import com.example.spring_data.dto.UserRequest;
@@ -64,7 +67,9 @@ public class UserServiceTest {
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId());
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        Page<User> userPage = new PageImpl<>(List.of(user));
+
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
 
         when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
 
@@ -157,16 +162,17 @@ public class UserServiceTest {
     void updateUser_Success_NoFieldChanges_ShouldUpdate() {
         UserResponse userResponse = new UserResponse();
         userResponse.setId(1L);
+        userResponse.setUsername("cristi");
+        userResponse.setEmail("cristi@gmail.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        when(userMapper.mapUserRequestToUser(any(UserRequest.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+        when(userMapper.mapUserToUserResponse(any(User.class))).thenReturn(userResponse);
 
         UserResponse updated = userService.updateUser(1L, userRequest);
 
         assertNotNull(updated);
+        assertEquals("cristi", updated.getUsername());
         verify(userRepository).save(any(User.class));
     }
 
@@ -183,15 +189,15 @@ public class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("new@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsername("new")).thenReturn(false);
-        when(userMapper.mapUserRequestToUser(any(UserRequest.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+        when(userMapper.mapUserToUserResponse(any(User.class))).thenReturn(userResponse);
 
         UserResponse updated = userService.updateUser(1L, userRequest);
 
         assertNotNull(updated);
         assertEquals("new@gmail.com", updated.getEmail());
         assertEquals("new", updated.getUsername());
+        verify(userRepository).save(any(User.class));
     }
 
     @Test

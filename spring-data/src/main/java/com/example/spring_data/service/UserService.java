@@ -3,12 +3,14 @@ package com.example.spring_data.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_data.dto.UserMapper;
 import com.example.spring_data.dto.UserRequest;
 import com.example.spring_data.dto.UserResponse;
 import com.example.spring_data.exception.EmailAlreadyExistsException;
+import com.example.spring_data.exception.InvalidUserRequestException;
 import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
 import com.example.spring_data.model.User;
@@ -24,7 +26,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public List<UserResponse> getAllUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(PageRequest.of(0, 5)).getContent();
         return users.stream().map(userMapper::mapUserToUserResponse).toList();
     }
 
@@ -50,6 +52,10 @@ public class UserService {
     }
 
     public UserResponse addUser(UserRequest request) {
+        if (!validateUserRequest(request)) {
+            throw new InvalidUserRequestException();
+        }
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
@@ -64,6 +70,10 @@ public class UserService {
     }
 
     public UserResponse updateUser(Long id, UserRequest request) {
+        if (!validateUserRequest(request)) {
+            throw new InvalidUserRequestException();
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException());
 
@@ -139,6 +149,30 @@ public class UserService {
     public List<UserResponse> searchTop10UsersByUsernameIgnoreCaseOrderByUsernameAsc(String username) {
         List<User> users = userRepository.findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(username);
         return users.stream().map(userMapper::mapUserToUserResponse).toList();
+    }
+
+    private boolean validateUserRequest(UserRequest request) {
+        if (request.getUsername() == null || request.getUsername().isBlank() || request.getUsername().length() < 3 || request.getUsername().length() > 20) {
+            return false;
+        }
+
+        if (request.getEmail() == null || request.getEmail().isBlank() || !request.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            return false;
+        }
+
+        if (request.getPassword() == null || request.getPassword().isBlank() || request.getPassword().length() < 8) {
+            return false;
+        }
+
+        if (request.getFirstName() == null || request.getFirstName().isBlank() || request.getFirstName().length() < 3 || request.getFirstName().length() > 50) {
+            return false;
+        }
+
+        if (request.getLastName() == null || request.getLastName().isBlank() || request.getLastName().length() < 3 || request.getLastName().length() > 50) {
+            return false;
+        }
+
+        return true;
     }
 
 }
