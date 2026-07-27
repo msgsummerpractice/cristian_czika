@@ -1,8 +1,8 @@
 package com.example.spring_data.exception;
 
-public class EmailAlreadyExistsException extends RuntimeException {
+public class EmailAlreadyExistsException extends BaseException {
 
-    public EmailAlreadyExistsException(String message) {
-        super(message);
+    public EmailAlreadyExistsException(String email) {
+        super("Email " + email + " is already in use.");
     }
 }

@@ -1,9 +1,8 @@
 package com.example.spring_data.exception;
 
-public class UserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends BaseException {
 
-    public UserNotFoundException(String message) {
-        super(message);
+    public UserNotFoundException() {
+        super("User not found.");
     }
-
 }

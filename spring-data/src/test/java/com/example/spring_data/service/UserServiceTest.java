@@ -54,7 +54,6 @@ public class UserServiceTest {
         userRequest.setLastName("Czika");
     }
 
-    // Get All
     @Test
     void getAllUsers_ShouldReturnListOfUsers() {
         when(userRepository.findAll()).thenReturn(List.of(user));
@@ -64,7 +63,6 @@ public class UserServiceTest {
         assertEquals(1, result.size());
     }
 
-    // Get By
     @Test
     void getUserById_ShouldReturnUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -99,11 +97,10 @@ public class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.getUserByUsername("invalid"));
     }
 
-    // Add User
     @Test
     void addUser_Success_ShouldReturnSavedUser() {
-        when(userRepository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.findByUsername(userRequest.getUsername())).thenReturn(Optional.empty());
+        when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(false);
+        when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         User savedUser = userService.addUser(userRequest);
@@ -115,7 +112,7 @@ public class UserServiceTest {
 
     @Test
     void addUser_WhenEmailExists_ShouldThrowException() {
-        when(userRepository.findByEmail(userRequest.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.addUser(userRequest));
         verify(userRepository, never()).save(any(User.class));
@@ -123,14 +120,13 @@ public class UserServiceTest {
 
     @Test
     void addUser_WhenUsernameExists_ShouldThrowException() {
-        when(userRepository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.findByUsername(userRequest.getUsername())).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(false);
+        when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
 
         assertThrows(UsernameAlreadyExistsException.class, () -> userService.addUser(userRequest));
         verify(userRepository, never()).save(any(User.class));
     }
 
-    // Update User
     @Test
     void updateUser_Success_NoFieldChanges_ShouldUpdate() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -148,8 +144,8 @@ public class UserServiceTest {
         userRequest.setUsername("new");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.findByEmail("new@gmail.com")).thenReturn(Optional.empty());
-        when(userRepository.findByUsername("new")).thenReturn(Optional.empty());
+        when(userRepository.existsByEmail("new@gmail.com")).thenReturn(false);
+        when(userRepository.existsByUsername("new")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         userService.updateUser(1L, userRequest);
@@ -160,7 +156,7 @@ public class UserServiceTest {
         userRequest.setEmail("otheremail@gmail.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.findByEmail("otheremail@gmail.com")).thenReturn(Optional.of(new User()));
+        when(userRepository.existsByEmail("otheremail@gmail.com")).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUser(1L, userRequest));
     }
