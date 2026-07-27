@@ -69,11 +69,12 @@ public class UserServiceTest {
 
         Page<User> userPage = new PageImpl<>(List.of(user));
 
-        when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 5);
 
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
         when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
 
-        List<UserResponse> result = userService.getAllUsers();
+        List<UserResponse> result = userService.getAllUsers(pageable);
 
         assertEquals(1, result.size());
     }

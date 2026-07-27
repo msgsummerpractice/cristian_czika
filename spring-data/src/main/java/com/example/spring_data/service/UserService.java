@@ -3,7 +3,7 @@ package com.example.spring_data.service;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_data.dto.UserMapper;
@@ -25,8 +25,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public List<UserResponse> getAllUsers() {
-        List<User> users = userRepository.findAll(PageRequest.of(0, 5)).getContent();
+    public List<UserResponse> getAllUsers(Pageable pageable) {
+        List<User> users = userRepository.findAll(pageable).getContent();
         return users.stream().map(userMapper::mapUserToUserResponse).toList();
     }
 
