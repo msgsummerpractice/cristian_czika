@@ -17,7 +17,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.spring_data.dto.UserMapper;
 import com.example.spring_data.dto.UserRequest;
+import com.example.spring_data.dto.UserResponse;
 import com.example.spring_data.exception.EmailAlreadyExistsException;
 import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
@@ -29,6 +31,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserService userService;
@@ -56,18 +61,28 @@ public class UserServiceTest {
 
     @Test
     void getAllUsers_ShouldReturnListOfUsers() {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+
         when(userRepository.findAll()).thenReturn(List.of(user));
 
-        List<User> result = userService.getAllUsers();
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+
+        List<UserResponse> result = userService.getAllUsers();
 
         assertEquals(1, result.size());
     }
 
     @Test
     void getUserById_ShouldReturnUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
 
-        User result = userService.getUserById(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+
+        UserResponse result = userService.getUserById(1L);
 
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
@@ -83,9 +98,13 @@ public class UserServiceTest {
 
     @Test
     void getUserByUsername_WhenExists_ShouldReturnUser() {
-        when(userRepository.findByUsername("cristi")).thenReturn(Optional.of(user));
+        UserResponse userResponse = new UserResponse();
+        userResponse.setEmail("cristi@gmail.com");
 
-        User result = userService.getUserByUsername("cristi");
+        when(userRepository.findByUsername("cristi")).thenReturn(Optional.of(user));
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+
+        UserResponse result = userService.getUserByUsername("cristi");
 
         assertEquals("cristi@gmail.com", result.getEmail());
     }
@@ -99,11 +118,18 @@ public class UserServiceTest {
 
     @Test
     void addUser_Success_ShouldReturnSavedUser() {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(1L);
+        userResponse.setUsername(userRequest.getUsername());
+
         when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(false);
         when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User savedUser = userService.addUser(userRequest);
+        when(userMapper.mapUserRequestToUser(any(UserRequest.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+
+        UserResponse savedUser = userService.addUser(userRequest);
 
         assertNotNull(savedUser);
         assertEquals(1L, savedUser.getId());
@@ -129,10 +155,16 @@ public class UserServiceTest {
 
     @Test
     void updateUser_Success_NoFieldChanges_ShouldUpdate() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(1L);
 
-        User updated = userService.updateUser(1L, userRequest);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        when(userMapper.mapUserRequestToUser(any(UserRequest.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
+
+        UserResponse updated = userService.updateUser(1L, userRequest);
 
         assertNotNull(updated);
         verify(userRepository).save(any(User.class));
@@ -143,12 +175,23 @@ public class UserServiceTest {
         userRequest.setEmail("new@gmail.com");
         userRequest.setUsername("new");
 
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(1L);
+        userResponse.setEmail("new@gmail.com");
+        userResponse.setUsername("new");
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("new@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsername("new")).thenReturn(false);
+        when(userMapper.mapUserRequestToUser(any(UserRequest.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
 
-        userService.updateUser(1L, userRequest);
+        UserResponse updated = userService.updateUser(1L, userRequest);
+
+        assertNotNull(updated);
+        assertEquals("new@gmail.com", updated.getEmail());
+        assertEquals("new", updated.getUsername());
     }
 
     @Test
@@ -159,6 +202,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmail("otheremail@gmail.com")).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUser(1L, userRequest));
+        verify(userRepository, never()).save(any(User.class));
     }
 
 }

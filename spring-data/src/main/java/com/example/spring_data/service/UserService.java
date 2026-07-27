@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.spring_data.dto.UserMapper;
 import com.example.spring_data.dto.UserRequest;
+import com.example.spring_data.dto.UserResponse;
 import com.example.spring_data.exception.EmailAlreadyExistsException;
 import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
@@ -22,26 +23,33 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(userMapper::mapUserToUserResponse).toList();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException());
+
+        return userMapper.mapUserToUserResponse(user);
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
+    public UserResponse getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException());
+
+        return userMapper.mapUserToUserResponse(user);
     }
 
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException());
+
+        return userMapper.mapUserToUserResponse(user);
     }
 
-    public User addUser(UserRequest request) {
+    public UserResponse addUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
@@ -51,10 +59,11 @@ public class UserService {
         }
 
         User user = userMapper.mapUserRequestToUser(request);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return userMapper.mapUserToUserResponse(savedUser);
     }
 
-    public User updateUser(Long id, UserRequest request) {
+    public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException());
 
@@ -68,7 +77,45 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        return userRepository.save(userMapper.mapUserRequestToUser(request));
+        User updatedUser = userRepository.save(userMapper.mapUserRequestToUser(request));
+        return userMapper.mapUserToUserResponse(updatedUser);
+    }
+
+    public UserResponse patchUser(Long id, UserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if (userRepository.existsByEmail(request.getEmail())
+                && !Objects.equals(user.getEmail(), request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
+        }
+
+        if (userRepository.existsByUsername(request.getUsername())
+                && !Objects.equals(user.getUsername(), request.getUsername())) {
+            throw new UsernameAlreadyExistsException(request.getUsername());
+        }
+
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+
+        if (request.getPassword() != null) {
+            user.setPassword(request.getPassword());
+        }
+
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+
+        return userMapper.mapUserToUserResponse(user);
     }
 
     public void deleteUser(Long id) {
@@ -83,8 +130,9 @@ public class UserService {
         return userRepository.countUsers();
     }
 
-    public List<User> searchTop10UsersByUsernameIgnoreCaseOrderByUsernameAsc(String username) {
-        return userRepository.findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(username);
+    public List<UserResponse> searchTop10UsersByUsernameIgnoreCaseOrderByUsernameAsc(String username) {
+        List<User> users = userRepository.findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(username);
+        return users.stream().map(userMapper::mapUserToUserResponse).toList();
     }
 
 }
