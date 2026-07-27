@@ -16,6 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     List<User> findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(String username);
 
     @Query("SELECT COUNT(u) FROM User u")

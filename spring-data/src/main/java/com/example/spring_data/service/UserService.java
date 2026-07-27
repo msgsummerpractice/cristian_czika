@@ -1,6 +1,7 @@
 package com.example.spring_data.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.example.spring_data.exception.EmailAlreadyExistsException;
 import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
 import com.example.spring_data.model.User;
+import com.example.spring_data.model.UserMapper;
 import com.example.spring_data.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,61 +27,54 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " was not found!"));
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User with username " + username + " was not found!"));
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " was not found!"));
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
     public User addUser(UserRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistsException("Email " + request.getEmail() + " is already in use.");
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UsernameAlreadyExistsException("Username " + request.getUsername() + " is already in use.");
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        User user = UserMapper.mapUserRequestToUser(request);
         return userRepository.save(user);
     }
 
     public User updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " was not found!"));
+                .orElseThrow(() -> new UserNotFoundException());
 
-        if (!user.getEmail().equals(request.getEmail())
-                && userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistsException("Email " + request.getEmail() + " is already in use.");
+        if (userRepository.existsByEmail(request.getEmail())
+                && !Objects.equals(user.getEmail(), request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
-        if (!user.getUsername().equals(request.getUsername())
-                && userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UsernameAlreadyExistsException("Username " + request.getUsername() + " is already in use.");
+        if (userRepository.existsByUsername(request.getUsername())
+                && !Objects.equals(user.getUsername(), request.getUsername())) {
+            throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-
-        return userRepository.save(user);
+        return userRepository.save(UserMapper.mapUserRequestToUser(request));
     }
 
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException();
+        }
+
         userRepository.deleteById(id);
     }
 
