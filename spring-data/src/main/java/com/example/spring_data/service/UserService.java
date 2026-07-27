@@ -5,12 +5,12 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import com.example.spring_data.dto.UserMapper;
 import com.example.spring_data.dto.UserRequest;
 import com.example.spring_data.exception.EmailAlreadyExistsException;
 import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
 import com.example.spring_data.model.User;
-import com.example.spring_data.model.UserMapper;
 import com.example.spring_data.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -49,7 +50,7 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        User user = UserMapper.mapUserRequestToUser(request);
+        User user = userMapper.mapUserRequestToUser(request);
         return userRepository.save(user);
     }
 
@@ -67,7 +68,7 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        return userRepository.save(UserMapper.mapUserRequestToUser(request));
+        return userRepository.save(userMapper.mapUserRequestToUser(request));
     }
 
     public void deleteUser(Long id) {
