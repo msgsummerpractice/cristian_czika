@@ -15,6 +15,7 @@ import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
 import com.example.spring_data.model.User;
 import com.example.spring_data.repository.UserRepository;
+import com.example.spring_data.validation.UserValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserValidator userValidator;
 
     public List<UserResponse> getAllUsers(Pageable pageable) {
         List<User> users = userRepository.findAll(pageable).getContent();
@@ -52,7 +54,7 @@ public class UserService {
     }
 
     public UserResponse addUser(UserRequest request) {
-        if (!validateUserRequest(request)) {
+        if (!userValidator.validateUserRequest(request)) {
             throw new InvalidUserRequestException();
         }
 
@@ -70,7 +72,7 @@ public class UserService {
     }
 
     public UserResponse updateUser(Long id, UserRequest request) {
-        if (!validateUserRequest(request)) {
+        if (!userValidator.validateUserRequest(request)) {
             throw new InvalidUserRequestException();
         }
 
@@ -111,23 +113,23 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        if (request.getUsername() != null) {
+        if (request.getUsername() != null && userValidator.isUsernameValid(request.getUsername())) {
             user.setUsername(request.getUsername());
         }
 
-        if (request.getEmail() != null) {
+        if (request.getEmail() != null && userValidator.isEmailValid(request.getEmail())) {
             user.setEmail(request.getEmail());
         }
 
-        if (request.getPassword() != null) {
+        if (request.getPassword() != null && userValidator.isPasswordValid(request.getPassword())) {
             user.setPassword(request.getPassword());
         }
 
-        if (request.getFirstName() != null) {
+        if (request.getFirstName() != null && userValidator.isFirstNameValid(request.getFirstName())) {
             user.setFirstName(request.getFirstName());
         }
 
-        if (request.getLastName() != null) {
+        if (request.getLastName() != null && userValidator.isLastNameValid(request.getLastName())) {
             user.setLastName(request.getLastName());
         }
 
@@ -149,30 +151,6 @@ public class UserService {
     public List<UserResponse> searchTop10UsersByUsernameIgnoreCaseOrderByUsernameAsc(String username) {
         List<User> users = userRepository.findTop10ByUsernameIgnoreCaseOrderByUsernameAsc(username);
         return users.stream().map(userMapper::mapUserToUserResponse).toList();
-    }
-
-    private boolean validateUserRequest(UserRequest request) {
-        if (request.getUsername() == null || request.getUsername().isBlank() || request.getUsername().length() < 3 || request.getUsername().length() > 20) {
-            return false;
-        }
-
-        if (request.getEmail() == null || request.getEmail().isBlank() || !request.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            return false;
-        }
-
-        if (request.getPassword() == null || request.getPassword().isBlank() || request.getPassword().length() < 8) {
-            return false;
-        }
-
-        if (request.getFirstName() == null || request.getFirstName().isBlank() || request.getFirstName().length() < 3 || request.getFirstName().length() > 50) {
-            return false;
-        }
-
-        if (request.getLastName() == null || request.getLastName().isBlank() || request.getLastName().length() < 3 || request.getLastName().length() > 50) {
-            return false;
-        }
-
-        return true;
     }
 
 }
