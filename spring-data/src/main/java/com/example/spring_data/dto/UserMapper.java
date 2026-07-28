@@ -19,4 +19,16 @@ public class UserMapper {
         return user;
     }
 
+    public UserResponse mapUserToUserResponse(User user) {
+        UserResponse userResponse = UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+
+        return userResponse;
+    }
+
 }
