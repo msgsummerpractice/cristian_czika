@@ -28,6 +28,7 @@ import com.example.spring_data.exception.UserNotFoundException;
 import com.example.spring_data.exception.UsernameAlreadyExistsException;
 import com.example.spring_data.model.User;
 import com.example.spring_data.repository.UserRepository;
+import com.example.spring_data.validation.UserValidator;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -37,6 +38,9 @@ public class UserServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private UserValidator userValidator;
 
     @InjectMocks
     private UserService userService;
@@ -74,9 +78,12 @@ public class UserServiceTest {
         when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
         when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
 
-        List<UserResponse> result = userService.getAllUsers(pageable);
+        Page<UserResponse> result = userService.getAllUsers(pageable);
 
-        assertEquals(1, result.size());
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+        assertEquals(userResponse.getId(), result.getContent().get(0).getId());
     }
 
     @Test
@@ -128,6 +135,7 @@ public class UserServiceTest {
         userResponse.setId(1L);
         userResponse.setUsername(userRequest.getUsername());
 
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(false);
         when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(false);
 
@@ -144,6 +152,7 @@ public class UserServiceTest {
 
     @Test
     void addUser_WhenEmailExists_ShouldThrowException() {
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.addUser(userRequest));
@@ -152,6 +161,7 @@ public class UserServiceTest {
 
     @Test
     void addUser_WhenUsernameExists_ShouldThrowException() {
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.existsByEmail(userRequest.getEmail())).thenReturn(false);
         when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
 
@@ -166,6 +176,7 @@ public class UserServiceTest {
         userResponse.setUsername("cristi");
         userResponse.setEmail("cristi@gmail.com");
 
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.mapUserToUserResponse(any(User.class))).thenReturn(userResponse);
@@ -187,6 +198,7 @@ public class UserServiceTest {
         userResponse.setEmail("new@gmail.com");
         userResponse.setUsername("new");
 
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("new@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsername("new")).thenReturn(false);
@@ -205,11 +217,61 @@ public class UserServiceTest {
     void updateUser_WhenEmailTakenByAnotherUser_ShouldThrowException() {
         userRequest.setEmail("otheremail@gmail.com");
 
+        when(userValidator.validateUserRequest(any(UserRequest.class))).thenReturn(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("otheremail@gmail.com")).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUser(1L, userRequest));
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void patchUser_Success_ShouldPatchFields() {
+        userRequest.setUsername("patched");
+        userRequest.setEmail("patched@gmail.com");
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(1L);
+        userResponse.setUsername("patched");
+        userResponse.setEmail("patched@gmail.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail("patched@gmail.com")).thenReturn(false);
+        when(userRepository.existsByUsername("patched")).thenReturn(false);
+        when(userValidator.isUsernameValid("patched")).thenReturn(true);
+        when(userValidator.isEmailValid("patched@gmail.com")).thenReturn(true);
+        when(userValidator.isPasswordValid("cristi123")).thenReturn(true);
+        when(userValidator.isFirstNameValid("Cristi")).thenReturn(true);
+        when(userValidator.isLastNameValid("Czika")).thenReturn(true);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.mapUserToUserResponse(any(User.class))).thenReturn(userResponse);
+
+        UserResponse patched = userService.patchUser(1L, userRequest);
+        assertNotNull(patched);
+        assertEquals("patched", patched.getUsername());
+        assertEquals("patched@gmail.com", patched.getEmail());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void deleteUser_Success_ShouldDelete() {
+        when(userRepository.existsById(1L)).thenReturn(true);
+        userService.deleteUser(1L);
+        verify(userRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteUser_WhenUserDoesNotExist_ShouldThrowException() {
+        when(userRepository.existsById(1L)).thenReturn(false);
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(1L));
+        verify(userRepository, never()).deleteById(1L);
+    }
+
+    @Test
+    void getUserCount_ShouldReturnTotalCount() {
+        when(userRepository.countUsers()).thenReturn(10);
+        int count = userService.getUserCount();
+        assertEquals(10, count);
     }
 
 }
