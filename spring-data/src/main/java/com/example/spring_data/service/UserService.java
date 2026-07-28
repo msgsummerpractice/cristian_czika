@@ -3,6 +3,7 @@ package com.example.spring_data.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +28,9 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserValidator userValidator;
 
-    public List<UserResponse> getAllUsers(Pageable pageable) {
-        List<User> users = userRepository.findAll(pageable).getContent();
-        return users.stream().map(userMapper::mapUserToUserResponse).toList();
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return users.map(userMapper::mapUserToUserResponse);
     }
 
     public UserResponse getUserById(Long id) {

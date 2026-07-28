@@ -2,6 +2,7 @@ package com.example.spring_data.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,25 +24,22 @@ import com.example.spring_data.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping(value = "/api/v1/users", produces = {
+    MediaType.APPLICATION_JSON_VALUE,
+    MediaType.APPLICATION_XML_VALUE
+})
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping(produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE
-    })
-    public ResponseEntity<List<UserResponse>> getAllUsers(Pageable pageable) {
-        List<UserResponse> users = userService.getAllUsers(pageable);
+    @GetMapping
+    public ResponseEntity<Page<UserResponse>> getAllUsers(Pageable pageable) {
+        Page<UserResponse> users = userService.getAllUsers(pageable);
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping(value = "/{id}", produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE
-    })
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.ok(user);
