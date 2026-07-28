@@ -134,7 +134,8 @@ public class UserService {
             user.setLastName(request.getLastName());
         }
 
-        return userMapper.mapUserToUserResponse(user);
+        User patchedUser = userRepository.save(user);
+        return userMapper.mapUserToUserResponse(patchedUser);
     }
 
     public void deleteUser(Long id) {
