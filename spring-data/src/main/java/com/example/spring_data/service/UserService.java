@@ -113,23 +113,23 @@ public class UserService {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
 
-        if (request.getUsername() != null && userValidator.isUsernameValid(request.getUsername())) {
+        if (userValidator.isUsernameValid(request.getUsername())) {
             user.setUsername(request.getUsername());
         }
 
-        if (request.getEmail() != null && userValidator.isEmailValid(request.getEmail())) {
+        if (userValidator.isEmailValid(request.getEmail())) {
             user.setEmail(request.getEmail());
         }
 
-        if (request.getPassword() != null && userValidator.isPasswordValid(request.getPassword())) {
+        if (userValidator.isPasswordValid(request.getPassword())) {
             user.setPassword(request.getPassword());
         }
 
-        if (request.getFirstName() != null && userValidator.isFirstNameValid(request.getFirstName())) {
+        if (userValidator.isFirstNameValid(request.getFirstName())) {
             user.setFirstName(request.getFirstName());
         }
 
-        if (request.getLastName() != null && userValidator.isLastNameValid(request.getLastName())) {
+        if (userValidator.isLastNameValid(request.getLastName())) {
             user.setLastName(request.getLastName());
         }
 
