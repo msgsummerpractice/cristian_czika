@@ -24,9 +24,6 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMultiFactorAuthentication(
-        authorities = {FactorGrantedAuthority.PASSWORD_AUTHORITY, FactorGrantedAuthority.X509_AUTHORITY}
-)
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
