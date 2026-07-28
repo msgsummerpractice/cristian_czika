@@ -1,13 +1,8 @@
 package com.example.spring_data.controller;
 
 import com.example.spring_data.dto.*;
-import com.example.spring_data.security.MfaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +20,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final MfaService mfaService;
-    private final UserDetailsService userDetailsService;
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signup(@RequestBody UserRequest request) {

@@ -58,7 +58,7 @@ public class AuthService {
                     )
             );
 
-            mfaService.generateOtp(request.getUsername());
+            mfaService.generateCode(request.getUsername());
 
             return Map.of(
                     "message", "MFA code generated. Please verify to complete login.",
@@ -70,7 +70,7 @@ public class AuthService {
     }
 
     public SignInResponse verifyMfa(MfaRequest request) {
-        boolean isValid = mfaService.verifyOtp(request.getUsername(), request.getCode());
+        boolean isValid = mfaService.verifyCode(request.getUsername(), request.getCode());
         if (!isValid) {
             throw new BadCredentialsException("Invalid or expired MFA code.");
         }
