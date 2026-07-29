@@ -1,7 +1,5 @@
 package com.example.spring_data.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = {
-    MediaType.APPLICATION_JSON_VALUE,
-    MediaType.APPLICATION_XML_VALUE
+        MediaType.APPLICATION_JSON_VALUE,
+        MediaType.APPLICATION_XML_VALUE
 })
 @RequiredArgsConstructor
 public class UserController {
