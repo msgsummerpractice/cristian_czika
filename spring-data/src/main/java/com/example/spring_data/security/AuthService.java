@@ -46,7 +46,7 @@ public class AuthService {
         return userMapper.mapUserToUserResponse(savedUser);
     }
 
-    public Map<String, String> signin(SignInRequest request) {
+    public JwtResponse signin(SignInRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BadCredentialsException("Wrong username or password."));
 
@@ -60,10 +60,10 @@ public class AuthService {
 
             mfaService.generateCode(request.getUsername());
 
-            return Map.of(
-                    "message", "MFA code generated. Please verify to complete login.",
-                    "username", request.getUsername()
-            );
+            JwtResponse response = JwtResponse.builder().message("MFA Code generated. Please verify to complete login.")
+                    .username(request.getUsername()).build();
+
+            return response;
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Wrong username or password.");
         }
