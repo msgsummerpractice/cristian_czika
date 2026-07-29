@@ -52,7 +52,7 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 64)
     private String lastName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "role_id", nullable = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Role role;
