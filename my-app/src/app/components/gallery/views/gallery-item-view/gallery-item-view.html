@@ -1,6 +1,12 @@
 <div class="w-full max-w-sm bg-white rounded-xl shadow-md overflow-hidden flex flex-col text-left">
   <div class="w-full h-48 bg-gray-200 overflow-hidden relative">
-    <img [src]="dog().imageUrl" [alt]="dog().name" class="w-full h-full object-cover" />
+    @if (dog().image$ | async; as imgUrl) {
+      <img [src]="imgUrl" [alt]="dog().name" class="w-full h-full object-cover" />
+    } @else {
+      <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm animate-pulse">
+        Loading...
+      </div>
+    }
   </div>
 
   <div class="p-6 flex flex-col flex-1">

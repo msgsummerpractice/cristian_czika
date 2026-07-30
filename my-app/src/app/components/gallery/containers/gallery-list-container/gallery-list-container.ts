@@ -1,17 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { DogService } from '../../../../core/dogservice';
-import { GalleryItem } from '../../views/gallery-item/gallery-item';
-import { AsyncPipe } from '@angular/common';
+import { DogService } from '../../../../core/services/dogservice';
+import { Dog } from '../../../../core/model/dog.model';
+import { GalleryListView } from '../../views/gallery-list-view/gallery-list-view';
 
 @Component({
-  selector: 'app-gallery-container',
-  imports: [GalleryItem, AsyncPipe],
-  templateUrl: './gallery-container.html',
+  selector: 'app-gallery-list-container',
+  imports: [GalleryListView],
+  templateUrl: './gallery-list-container.html',
 })
-export class GalleryContainer {
+export class GalleryListContainer {
   private dogService = inject(DogService);
 
-  dogs = [
+  dogs: Dog[] = [
     {
       name: 'Golden Retriever',
       description:
@@ -32,3 +32,4 @@ export class GalleryContainer {
     },
   ];
 }
+

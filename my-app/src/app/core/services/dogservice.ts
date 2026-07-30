@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { DogApiResponse } from './dto/dogapiresponse';
+import { DogApiResponse } from '../dto/dogapiresponse';
 
 @Service()
 export class DogService {
