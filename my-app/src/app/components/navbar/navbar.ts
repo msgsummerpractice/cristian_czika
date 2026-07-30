@@ -9,4 +9,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   imports: [RouterLink, MatToolbarModule, MatButtonModule, MatIconModule],
   templateUrl: './navbar.html',
 })
-export class Navbar {}
+export class Navbar {
+  readonly links = [
+    { label: 'Home', link: '/home' },
+    { label: 'Login', link: '/login' },
+  ];
+}
