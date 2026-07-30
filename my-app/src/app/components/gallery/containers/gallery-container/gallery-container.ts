@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { DogService } from '../../core/dogservice';
+import { DogService } from '../../../../core/dogservice';
+import { GalleryItem } from '../../views/gallery-item/gallery-item';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-gallery',
-  imports: [AsyncPipe],
-  templateUrl: './gallery.html',
+  selector: 'app-gallery-container',
+  imports: [GalleryItem, AsyncPipe],
+  templateUrl: './gallery-container.html',
 })
-export class Gallery {
+export class GalleryContainer {
   private dogService = inject(DogService);
 
   dogs = [
