@@ -1,4 +1,4 @@
-<div class="w-full h-screen flex flex-col items-center text-center">
+<div class="w-full h-auto flex flex-col items-center text-center">
   <header>
     <h1 class="text-4xl font-bold">Dog Gallery</h1>
     <p class="mt-4">This is a gallery of dogs</p>
@@ -6,7 +6,7 @@
   <main class="mt-8 w-full flex-1">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center">
       @for (dog of dogs(); track dog.name) {
-        <app-gallery-item-container [dog]="dog" />
+        <app-gallery-item-container [dog]="dog"/>
       }
     </div>
   </main>
