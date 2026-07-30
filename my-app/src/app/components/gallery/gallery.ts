@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Dogservice } from '../../core/dogservice';
+import { DogService } from '../../core/dogservice';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -8,7 +8,7 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './gallery.html',
 })
 export class Gallery {
-  private dogService = inject(Dogservice);
+  private dogService = inject(DogService);
 
   dogs = [
     {
