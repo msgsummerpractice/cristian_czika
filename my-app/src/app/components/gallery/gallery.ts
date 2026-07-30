@@ -6,7 +6,6 @@ import { AsyncPipe } from '@angular/common';
   selector: 'app-gallery',
   imports: [AsyncPipe],
   templateUrl: './gallery.html',
-  styleUrl: './gallery.css',
 })
 export class Gallery {
   private dogService = inject(Dogservice);
