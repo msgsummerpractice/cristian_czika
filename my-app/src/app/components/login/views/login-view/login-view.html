@@ -1,0 +1,16 @@
+<div class="w-full h-auto flex items-center justify-center">
+  <form class="flex flex-col items-center justify-center text-center gap-8" [formGroup]="loginFormGroup()"
+        (ngSubmit)="onFormSubmit()">
+
+    <label for="email">Email</label>
+    <input class="border rounded-md" id="email" type="email" formControlName="email"/>
+
+    <label for="password">Password</label>
+    <input class="border rounded-md" id="password" type="password" formControlName="password"/>
+
+    <button mat-button type="submit" [disabled]="loginFormGroup().invalid">
+      Login
+    </button>
+
+  </form>
+</div>
