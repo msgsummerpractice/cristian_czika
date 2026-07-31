@@ -5,7 +5,7 @@ import { SignInRequest, SignInResponse } from '../model/user.model';
 
 @Service()
 export class AuthService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8080/api/v1/auth';
   private authenticated = signal<boolean>(this.hasToken());
 
@@ -20,6 +20,10 @@ export class AuthService {
     );
   }
 
+  getToken(): string {
+    return localStorage.getItem('token') ?? 'demo-token';
+  }
+
   signOut(): void {
     localStorage.removeItem('token');
     this.authenticated.set(false);
@@ -32,21 +36,4 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.authenticated.asReadonly()();
   }
-
-  // login(): Observable<any> {
-  //   return this.http.post<Observable<any>>('http://localhost:3000/auth/login', {
-  //     username: 'cristi',
-  //     password: 'cristi123',
-  //   });
-  // }
-  //
-  // register(): Observable<any> {
-  //   return this.http.post<Observable<any>>('http://localhost:3000/auth/register', {
-  //     username: 'cristi',
-  //     password: 'cristi123',
-  //     firstName: 'cristi',
-  //     lastName: 'czika',
-  //     email: 'cristi@gmail.com',
-  //   });
-  // }
 }
