@@ -2,8 +2,8 @@
   <form class="flex flex-col items-center justify-center text-center gap-8" [formGroup]="loginFormGroup()"
         (ngSubmit)="onFormSubmit()">
 
-    <label for="email">Email</label>
-    <input class="border rounded-md" id="email" type="email" formControlName="email"/>
+    <label for="username">Username</label>
+    <input class="border rounded-md" id="username" type="text" formControlName="username"/>
 
     <label for="password">Password</label>
     <input class="border rounded-md" id="password" type="password" formControlName="password"/>
