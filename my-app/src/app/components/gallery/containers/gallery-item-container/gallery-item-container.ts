@@ -5,7 +5,7 @@ import { GalleryItemView } from '../../views/gallery-item-view/gallery-item-view
 @Component({
   selector: 'app-gallery-item-container',
   imports: [GalleryItemView],
-  templateUrl: './gallery-item-container.html',
+  template: '<app-gallery-item-view [dog]="dog()"/>',
 })
 export class GalleryItemContainer {
   dog = input.required<Dog>();

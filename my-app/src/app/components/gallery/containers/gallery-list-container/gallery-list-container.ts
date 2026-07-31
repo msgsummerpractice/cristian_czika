@@ -8,7 +8,7 @@ import { forkJoin, map } from 'rxjs';
 @Component({
   selector: 'app-gallery-list-container',
   imports: [GalleryListView],
-  templateUrl: './gallery-list-container.html',
+  template: '<app-gallery-list-view [dogs]="dogs()"/>',
 })
 export class GalleryListContainer {
   private dogService = inject(DogService);
