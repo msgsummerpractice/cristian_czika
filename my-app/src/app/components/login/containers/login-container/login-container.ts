@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
+import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { LoginView } from '../../views/login-view/login-view';
 import { AuthService } from '../../../../core/services/auth-service';
 import { Router } from '@angular/router';
 import { SignInRequest } from '../../../../core/model/user.model';
 
-type LoginForm = {
+export type LoginForm = FormGroup<{
   username: FormControl<string>;
   password: FormControl<string>;
-};
+}>;
 
 @Component({
   selector: 'app-login-container',
@@ -20,7 +20,7 @@ export class LoginContainer {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  protected readonly loginFormGroup = this._formBuilder.group<LoginForm>({
+  protected readonly loginFormGroup: LoginForm = this._formBuilder.group({
     username: this._formBuilder.control('', [Validators.required, Validators.minLength(3)]),
     password: this._formBuilder.control('', [Validators.required, Validators.minLength(6)]),
   });
