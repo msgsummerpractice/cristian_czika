@@ -7,7 +7,8 @@ import { SignInRequest, SignInResponse } from '../model/user.model';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8080/api/v1/auth';
-  private authenticated = signal<boolean>(this.hasToken());
+  private readonly authenticated = signal<boolean>(this.hasToken());
+  readonly isAuthenticated = this.authenticated.asReadonly();
 
   signIn(request: SignInRequest): Observable<SignInResponse> {
     return this.http.post<SignInResponse>(`${this.API_URL}/signin`, request).pipe(
@@ -31,9 +32,5 @@ export class AuthService {
 
   hasToken(): boolean {
     return !!localStorage.getItem('token');
-  }
-
-  isAuthenticated(): boolean {
-    return this.authenticated.asReadonly()();
   }
 }

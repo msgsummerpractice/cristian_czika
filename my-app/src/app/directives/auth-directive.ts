@@ -1,5 +1,17 @@
-import { Directive, effect, inject, input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {
+  Directive,
+  effect,
+  inject,
+  input,
+  InputOptions,
+  InputOptionsWithoutTransform,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import { AuthService } from '../core/services/auth-service';
+
+type AuthInputOptions = InputOptionsWithoutTransform<boolean> & { alias: 'appAuthVisibility' };
+const authInputConfig: AuthInputOptions = { alias: 'appAuthVisibility' };
 
 @Directive({
   selector: '[appAuthDirective]',
@@ -7,7 +19,7 @@ import { AuthService } from '../core/services/auth-service';
 export class AuthDirective {
   private readonly authService = inject(AuthService);
 
-  showIfAuthenticated = input.required<boolean>({ alias: 'appAuthVisibility' });
+  readonly showIfAuthenticated = input.required<boolean>(authInputConfig);
 
   constructor(
     private templatedRef: TemplateRef<any>,

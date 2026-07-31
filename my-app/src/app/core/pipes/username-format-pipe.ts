@@ -9,12 +9,12 @@ export class UsernameFormatPipe implements PipeTransform {
       return '';
     }
 
-    const trimmedUsername = value.trim();
+    const username = value?.trim().toLowerCase();
 
-    if (!trimmedUsername.startsWith('@')) {
-      return `@${trimmedUsername.toLowerCase()}`;
+    if (!username.startsWith('@')) {
+      return `@${username}`;
     }
 
-    return trimmedUsername.toLowerCase();
+    return username;
   }
 }
