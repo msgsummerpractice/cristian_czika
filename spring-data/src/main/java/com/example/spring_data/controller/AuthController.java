@@ -26,15 +26,15 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<JwtResponse> signin(@RequestBody SignInRequest request) {
-        JwtResponse response = authService.signin(request);
+    public ResponseEntity<SignInResponse> signin(@RequestBody SignInRequest request) {
+        SignInResponse response = authService.signin(request);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<SignInResponse> verify(@RequestBody MfaRequest request) {
-        SignInResponse response = authService.verifyMfa(request);
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/verify")
+//    public ResponseEntity<SignInResponse> verify(@RequestBody MfaRequest request) {
+//        SignInResponse response = authService.verifyMfa(request);
+//        return ResponseEntity.ok(response);
+//    }
 
 }

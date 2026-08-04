@@ -46,7 +46,7 @@ public class AuthService {
         return userMapper.mapUserToUserResponse(savedUser);
     }
 
-    public JwtResponse signin(SignInRequest request) {
+    public SignInResponse signin(SignInRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BadCredentialsException("Wrong username or password."));
 
@@ -60,8 +60,10 @@ public class AuthService {
 
             mfaService.generateCode(request.getUsername());
 
-            JwtResponse response = JwtResponse.builder().message("MFA Code generated. Please verify to complete login.")
-                    .username(request.getUsername()).build();
+//            JwtResponse response = JwtResponse.builder().message("MFA Code generated. Please verify to complete login.")
+//                    .username(request.getUsername()).build();
+
+            SignInResponse response = SignInResponse.builder().token(jwtService.generateToken(user)).role(user.getRole().getName()).expiresIn(jwtService.getExpirationTime()).build();
 
             return response;
         } catch (BadCredentialsException e) {
@@ -69,20 +71,20 @@ public class AuthService {
         }
     }
 
-    public SignInResponse verifyMfa(MfaRequest request) {
-        boolean isValid = mfaService.verifyCode(request.getUsername(), request.getCode());
-        if (!isValid) {
-            throw new BadCredentialsException("Invalid or expired MFA code.");
-        }
-
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BadCredentialsException("User not found."));
-
-        return SignInResponse.builder()
-                .token(jwtService.generateToken(user))
-                .role(user.getRole().getName())
-                .expiresIn(jwtService.getExpirationTime())
-                .build();
-    }
+//    public SignInResponse verifyMfa(MfaRequest request) {
+//        boolean isValid = mfaService.verifyCode(request.getUsername(), request.getCode());
+//        if (!isValid) {
+//            throw new BadCredentialsException("Invalid or expired MFA code.");
+//        }
+//
+//        User user = userRepository.findByUsername(request.getUsername())
+//                .orElseThrow(() -> new BadCredentialsException("User not found."));
+//
+//        return SignInResponse.builder()
+//                .token(jwtService.generateToken(user))
+//                .role(user.getRole().getName())
+//                .expiresIn(jwtService.getExpirationTime())
+//                .build();
+//    }
 
 }
