@@ -10,16 +10,14 @@ import {
 } from '@angular/core';
 import { AuthService } from '../core/services/auth-service';
 
-type AuthInputOptions = InputOptionsWithoutTransform<boolean> & { alias: 'appAuthVisibility' };
-const authInputConfig: AuthInputOptions = { alias: 'appAuthVisibility' };
-
 @Directive({
   selector: '[appAuthDirective]',
+  standalone: true,
 })
 export class AuthDirective {
   private readonly authService = inject(AuthService);
 
-  readonly showIfAuthenticated = input.required<boolean>(authInputConfig);
+  readonly showIfAuthenticated = input.required<boolean>({ alias: 'appAuthVisibility' });
 
   constructor(
     private templatedRef: TemplateRef<any>,
