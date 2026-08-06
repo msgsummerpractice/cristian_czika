@@ -7,7 +7,7 @@ import { SignInRequest, SignInResponse } from '../model/user.model';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly API_URL =
-    'https://czika-cristian-backend.internal.happyriver-3aa78494.germanywestcentral.azurecontainerapps.io/api/v1/auth';
+    'https://czika-cristian-backend.happyriver-3aa78494.germanywestcentral.azurecontainerapps.io/api/v1/auth';
   private readonly authenticated = signal<boolean>(this.hasToken());
   readonly isAuthenticated = this.authenticated.asReadonly();
 
